@@ -138,3 +138,5 @@ footer { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem 1rem; 
 .embedded #timeline .section-head {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);padding:0;}
 .embedded #collection-status {margin-top:.6rem;}
 @media (max-width:38rem) { .section-head {padding-block:1.25rem .8rem;}.filters{padding:.6rem 0}.list-heading{margin-top:.55rem}.chip{min-height:2rem}.article{padding:.8rem 0} }
+.check-bar {display:flex;align-items:center;background:#eaf1eb;gap:.45rem;justify-content:space-between;padding-right:.35rem;}
+.check-bar .quiet {flex:none;font-size:.74rem;min-height:2rem;padding:.25rem .45rem;}

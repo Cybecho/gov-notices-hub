@@ -7,8 +7,8 @@
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="#153f3b">
   <title>서울 관광·숙박 리서치</title>
-  <link rel="stylesheet" href="./ui/style.css">
-  <script type="module" src="./ui/app.mjs"></script>
+  <link rel="stylesheet" href="./ui/style.css?v=2">
+  <script type="module" src="./ui/app.mjs?v=2"></script>
 </head>
 <body>
   <div id="reader">
@@ -38,7 +38,7 @@
             <h1 id="timeline-heading" tabindex="-1">리서치 글 모음</h1>
             <p>호텔 실적부터 여행자 조사까지, 출처별로 읽는 최신 연구와 보고서.</p>
           </header>
-          <p class="meta check-strip" id="collection-status" role="status">첫 수집 점검 대기</p>
+          <div class="check-bar"><p class="meta check-strip" id="collection-status" role="status">첫 수집 점검 대기</p><button type="button" id="refresh-feed" class="quiet" aria-label="허브 목록 새로 확인">새로 확인</button></div>
           <div class="filters">
             <fieldset>
               <legend>출처</legend>

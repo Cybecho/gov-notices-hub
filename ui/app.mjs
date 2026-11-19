@@ -15,6 +15,7 @@ const failures = new Map();
 let archiveFailures = 0;
 let archivePending = false;
 let loading = false;
+let lastRead=0,edition='';
 let limit = pageSize;
 let feed = [];
 let freshnessTimer;
@@ -346,8 +347,10 @@ function drawStatus() {
 }
 
 async function readJSON(path) {
-  const res = await fetch(new URL(path, root), {
-    mode: 'same-origin', credentials: 'omit', redirect: 'error', referrerPolicy: 'no-referrer'
+  const metadataUrl = new URL(path,root);
+  metadataUrl.searchParams.set('edition',edition);
+  const res = await fetch(metadataUrl, {
+    cache: 'no-store', mode: 'same-origin', credentials: 'omit', redirect: 'error', referrerPolicy: 'no-referrer'
   });
   if (!res.ok) throw new Error(String(res.status));
   return res.json();
@@ -399,9 +402,12 @@ async function loadArchives() {
   drawStatus();
 }
 
-async function load() {
+async function load(manual=false) {
   if (loading) return;
   loading = true;
+  lastRead=Date.now();
+  edition=manual===true ? String(lastRead) : String(Math.floor(lastRead/60000));
+  $('#refresh-feed').disabled=true;
   drawStatus();
   await Promise.all([
     readSlot('sources', '출처 목록', 'data/sources.json', parseSources, () => {
@@ -419,6 +425,7 @@ async function load() {
     loadArchives()
   ]);
   loading = false;
+  $('#refresh-feed').disabled=false;
   drawFeed();
   drawStatus();
 }
@@ -449,7 +456,11 @@ $('#load-more').addEventListener('click', () => {
   limit += pageSize;
   drawFeed(previous);
 });
-$('#retry').addEventListener('click', load);
+$('#retry').addEventListener('click', () => load(true));
+$('#refresh-feed').addEventListener('click', () => load(true));
+function readIfDue(){if(!document.hidden && Date.now()-lastRead>=3600000)load();}
+setInterval(readIfDue, 60000);
+document.addEventListener('visibilitychange',readIfDue);
 window.addEventListener('hashchange', () => route(true));
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden) scheduleBadgeUpdates();
