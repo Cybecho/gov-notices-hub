@@ -67,7 +67,7 @@ jobs:
           set -euo pipefail
           test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$(git rev-parse HEAD)" || { echo 'Main advanced. Do not overwrite a concurrent change.'; exit 1; }
           if test "$PERSIST" = yes; then
-            d="$RUNNER_TEMP/verified"; cp "$d/data/"{health,notices,sources}.json data/; cp "$d/data/archive/"*.json data/archive/; cp "$d/docs/SOURCE-STATUS.md" docs/;
+            d="$RUNNER_TEMP/verified"; cp "$d/data/"{health,notices,sources,syndication,reader}.json data/; cp "$d/data/archive/"*.json data/archive/; cp "$d/docs/SOURCE-STATUS.md" docs/;
             if test -f "$d/docs/FIRST-BACKFILL.md"; then cp "$d/docs/FIRST-BACKFILL.md" docs/; fi
             git add -- data docs/SOURCE-STATUS.md; if test -f docs/FIRST-BACKFILL.md; then git add -- docs/FIRST-BACKFILL.md; fi
             git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com';
@@ -98,5 +98,5 @@ jobs:
           const url='https://cybecho.github.io/gov-notices-hub/',id=process.env.GITHUB_RUN_ID;
           const get=async p=>{const r=await fetch(url+p+'?verify='+id+'-'+Date.now(),{redirect:'error',signal:AbortSignal.timeout(10000)});assert.equal(r.status,200);return r.json();};
           let proof;for(let i=0;i<12;i++){try{proof=await get('build-provenance.json');if(proof.workflowRun===id)break;}catch{}await new Promise(r=>setTimeout(r,5000));}assert.equal(proof?.workflowRun,id);
-          const [n,s,h,a]=await Promise.all(['data/notices.json','data/sources.json','data/health.json','data/archive/index.json'].map(get));assert.equal(s.filter(x=>x.role==='district').length,25);assert.equal(n.items.length+a.files.reduce((v,f)=>v+f.count,0),h.items);assert.equal(h.attempted,h.succeeded+h.failed);console.log('PUBLIC OK',id,n.items.length,'items',h.checkedAt,h.succeeded,'success',h.failed,'failed');
+          const [n,s,h,a]=await Promise.all(['data/notices.json','data/sources.json','data/health.json','data/archive/index.json'].map(get));assert.equal(s.filter(x=>x.role==='district').length,25);assert.equal(n.items.length+a.files.reduce((v,f)=>v+f.count,0),h.items);assert.equal(h.attempted,h.succeeded+h.failed);const r=await get('data/reader.json');assert.equal(r.schema,'seoul-links-reader/2');assert.equal(r.coverage.length,15);assert.ok(r.items.length>=177);assert.ok(new Set(r.items.map(i=>i.sourceId)).size>=14);assert.ok(r.catalogEntries.length>=9);assert.equal(r.items.length,new Set(r.items.map(i=>i.url)).size);assert.ok(r.discovery.providers.some(p=>p.id==='yanolja-blog-atom'));console.log('PUBLIC OK',id,r.items.length,'direct links',r.catalogEntries.length,'catalog entries',r.highlights.length,'references',h.checkedAt,h.succeeded,'direct success',r.discovery.providers[0].status,'Atom');
           JS

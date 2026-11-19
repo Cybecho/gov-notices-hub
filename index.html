@@ -7,8 +7,8 @@
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="#153f3b">
   <title>서울 관광·숙박 리서치</title>
-  <link rel="stylesheet" href="./ui/style.css?v=2">
-  <script type="module" src="./ui/app.mjs?v=2"></script>
+  <link rel="stylesheet" href="./ui/style.css?v=reader2.1">
+  <script type="module" src="./ui/app.mjs?v=reader2.1"></script>
 </head>
 <body>
   <div id="reader">
@@ -36,33 +36,30 @@
           <header class="section-head">
             <p class="kicker">서울 관광·숙박</p>
             <h1 id="timeline-heading" tabindex="-1">리서치 글 모음</h1>
-            <p>호텔 실적부터 여행자 조사까지, 출처별로 읽는 최신 연구와 보고서.</p>
+            <p>15개 채널의 호텔 실적, 관광 동향, 여행자 조사를 발행일순으로 읽습니다.</p>
           </header>
           <div class="check-bar"><p class="meta check-strip" id="collection-status" role="status">첫 수집 점검 대기</p><button type="button" id="refresh-feed" class="quiet" aria-label="허브 목록 새로 확인">새로 확인</button></div>
           <div class="filters">
-            <fieldset>
-              <legend>출처</legend>
-              <div class="chips" id="source-filters"></div>
-              <details id="other-filter-box" hidden><summary>기타 출처</summary><div class="chips" id="other-source-filters"></div></details>
-            </fieldset>
-            <fieldset>
-              <legend>주제</legend>
-              <div class="chips" id="category-filters"></div>
-            </fieldset>
+            <details id="filter-panel"><summary id="filter-summary">출처·주제 선택 · 전체</summary>
+              <fieldset><legend>출처 · 숫자는 현재 색인된 항목 수입니다.</legend><div class="chips" id="source-filters"></div></fieldset>
+              <fieldset><legend>주제</legend><div class="chips" id="category-filters"></div></fieldset>
+            </details>
             <div class="search-line">
-              <label for="title-search">제목 검색</label>
-              <input type="search" id="title-search" placeholder="찾을 제목 입력" autocomplete="off">
+              <label for="title-search" class="sr-only">제목·출처·주제 검색</label>
+              <input type="search" id="title-search" placeholder="제목·출처·주제 검색" autocomplete="off">
               <button type="button" class="quiet" id="reset">초기화</button>
             </div>
           </div>
           <div class="list-heading">
-            <h2>최신 글</h2>
+            <h2>자료 타임라인</h2>
             <span id="result-count" role="status"></span>
           </div>
           <p class="meta" id="updated">목록 갱신 시각 확인 중</p>
+          <details class="check-history"><summary>시간별 점검 이력</summary><p id="hourly-history" class="meta"></p><a href="#notes">경로별 점검 결과 보기</a></details>
           <p class="state" id="feed-state" role="status">글 목록을 불러오는 중입니다.</p>
           <ol id="articles" aria-label="게시일 최신순 리서치 글"></ol>
           <button type="button" class="more" id="load-more" hidden>글 더 보기</button>
+          <details id="reader-highlights" class="supplement" hidden><summary>사용자 지정 참고 자료 · 자동 수집 아님</summary><ul id="highlight-links" class="directory"></ul></details>
           <p class="meta archive" id="archive-state" role="status">보관 목록 확인 중</p>
         </section>
 
@@ -144,9 +141,11 @@
           <h2 class="rule-title">원문과 이용 조건</h2>
           <p>공지는 원문 링크로 안내합니다. 관악구·중구·마포구를 포함해 공공누리 표시는 게시물과 첨부물마다 확인해야 합니다. 제4유형이 표시된 자료에는 출처 표시, 상업적 이용 금지, 변경 금지 조건이 적용됩니다. 같은 게시판의 다른 자료에도 같은 조건이 적용된다고 볼 수 없습니다.</p>
           <h2 class="rule-title">수집 상태</h2>
-          <p>GitHub Actions의 시간별 예약 실행은 지연되거나 건너뛸 수 있습니다. 아래 시각은 저장된 기록을 한국 표준시로 표시합니다. NEW는 최초 수집 후 24시간 이내인 글에 붙습니다.</p>
+          <p>GitHub Actions의 시간별 예약 실행은 지연되거나 건너뛸 수 있습니다. 아래 시각은 저장된 기록을 한국 표준시로 표시합니다. NEW는 시간별 경로에서 처음 색인한 뒤 24시간 동안 표시합니다. 새로 발행됐다는 뜻은 아닙니다. 개별 확인 자료와 공식 목록 항목에는 표시하지 않습니다.</p>
           <p id="health-state" class="meta" role="status">점검 기록 확인 중</p>
+
           <dl id="health-metrics" class="metrics"></dl>
+          <div id="discovery-status" hidden><h2 class="rule-title">시간별 발견 경로</h2><p id="discovery-time" class="meta"></p><ul id="discovery-providers" class="directory"></ul></div>
         </section>
       </main>
 

@@ -140,3 +140,25 @@ footer { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem 1rem; 
 @media (max-width:38rem) { .section-head {padding-block:1.25rem .8rem;}.filters{padding:.6rem 0}.list-heading{margin-top:.55rem}.chip{min-height:2rem}.article{padding:.8rem 0} }
 .check-bar {display:flex;align-items:center;background:#eaf1eb;gap:.45rem;justify-content:space-between;padding-right:.35rem;}
 .check-bar .quiet {flex:none;font-size:.74rem;min-height:2rem;padding:.25rem .45rem;}
+
+/* Reader v2: controls stay compact until a reader chooses a channel. */
+#timeline .section-head { padding-block: clamp(1.2rem,3vw,2.2rem) 1rem; }
+#timeline h1 {font-size:clamp(1.95rem,4vw,2.8rem)}
+#timeline .filters {display:flex;align-items:start;justify-content:space-between;gap:.65rem 1rem;flex-wrap:wrap;padding:.72rem 0}
+#filter-panel {max-width:100%;min-width:0;color:var(--teal)}
+#filter-panel summary,.supplement summary {font-weight:700;cursor:pointer;padding:.45rem .6rem;font-size:.9rem;overflow-wrap:anywhere;}
+#filter-panel summary {border:1px solid #a2b5a8;background:#f1f5ef;border-radius:.35rem;}
+#filter-panel[open] {width:100%}
+#filter-panel fieldset {margin-top:.8rem}
+#timeline .search-line {flex:1 1 12rem;justify-content:flex-end; flex-wrap:nowrap;}
+#timeline .search-line input {flex:1;max-width:24rem;min-height:2.45rem;}
+#timeline .list-heading {margin-top:.85rem;flex-wrap:wrap}
+#result-count {font-variant-numeric:tabular-nums;}
+.index-action,.record-info {display:block;font:normal .78rem/1.5 system-ui,sans-serif;color:var(--muted);margin-top:.3rem;overflow-wrap:anywhere;}
+.index-action {color:var(--teal);text-decoration:underline;text-underline-offset:.2em;}
+.method {color:var(--muted);font-size:.74rem;}
+.supplement {margin:1rem 0;border-block:1px solid var(--line);padding:.3rem 0;}
+#discovery-providers h3 {overflow-wrap:anywhere;}
+@media (max-width:38rem) {#timeline .filters {gap:.45rem} #filter-panel {width:100%} #timeline .search-line {width:100%} #timeline .search-line input {max-width:none;} #filter-panel summary,.quiet {min-height:2.55rem} .check-bar {align-items:center} .article-meta {gap:.3rem .5rem} #timeline .section-head {padding-block:1rem .65rem} #timeline .list-heading {gap:.1rem .6rem}}
+
+.check-history {font-size:.78rem;color:var(--muted);margin:-.5rem 0 .55rem;} .check-history summary {cursor:pointer;width:fit-content;padding-block:.25rem;}
