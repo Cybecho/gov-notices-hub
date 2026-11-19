@@ -1,6 +1,77 @@
 {
   "schema": "issuer-syndication/1",
-  "checkedAt": null,
-  "items": [],
-  "providers": [{"id":"yanolja-blog-atom","via":"야놀자리서치 공식 Blogger Atom","channels":["yanolja-trend","yanolja-insight","yanolja-brief"],"status":"pending","checkedAt":null,"lastSuccessAt":null,"lastFailureAt":null,"newCount":null,"seen":null,"error":null,"pages":null}]
+  "checkedAt": "2026-11-20T06:29:28.517+09:00",
+  "items": [
+    {
+      "sourceId": "yanolja-brief",
+      "title": "[Yanolja Research Brief] Vol.18 Analysis of Korea's Inbound and Outbound Tourism Performance in Jan-Sep 2026",
+      "url": "https://yanoljaresearch.blogspot.com/2026/11/yanolja-research-brief-vol18-analysis.html",
+      "publishedAt": "2026-11-10",
+      "linkKind": "release",
+      "evidenceUrl": "https://yanoljaresearch.blogspot.com/feeds/posts/default",
+      "workKey": "yanolja:brief:1005",
+      "fetchedAt": "2026-11-20T06:29:28.517+09:00"
+    },
+    {
+      "sourceId": "yanolja-trend",
+      "title": "[Yanolja Research Korean Lodging Trends] Korean Lodging Industry Trends Report for Q3 2026",
+      "url": "https://yanoljaresearch.blogspot.com/2026/10/yanolja-research-korean-lodging-trends.html",
+      "publishedAt": "2026-10-27",
+      "linkKind": "release",
+      "evidenceUrl": "https://yanoljaresearch.blogspot.com/feeds/posts/default",
+      "workKey": "yanolja:trend:998",
+      "fetchedAt": "2026-11-20T06:29:28.517+09:00"
+    },
+    {
+      "sourceId": "yanolja-insight",
+      "title": "[Yanolja Research Insights] Vol.48 Financial Feasibility of Constructing a Large-Scale, 50,000-Seat Performance Venue",
+      "url": "https://yanoljaresearch.blogspot.com/2026/10/yanolja-research-insights-vol48.html",
+      "publishedAt": "2026-10-01",
+      "linkKind": "release",
+      "evidenceUrl": "https://yanoljaresearch.blogspot.com/feeds/posts/default",
+      "workKey": "yanolja:insight:973",
+      "fetchedAt": "2026-11-20T06:29:28.517+09:00"
+    },
+    {
+      "sourceId": "yanolja-insight",
+      "title": "[Yanolja Research Insights] Vol.47 K-Medical Tourism: Anchoring High-Value Travel",
+      "url": "https://yanoljaresearch.blogspot.com/2026/09/yanolja-research-insights-vol47-k.html",
+      "publishedAt": "2026-09-29",
+      "linkKind": "release",
+      "evidenceUrl": "https://yanoljaresearch.blogspot.com/feeds/posts/default",
+      "workKey": "yanolja:insight:972",
+      "fetchedAt": "2026-11-20T06:29:28.517+09:00"
+    },
+    {
+      "sourceId": "yanolja-brief",
+      "title": "[Yanolja Research Brief] Vol.17 Forecast of Inbound Tourist Arrivals to South Korea in 2026",
+      "url": "https://yanoljaresearch.blogspot.com/2026/09/yanolja-research-brief-vol17-forecast.html",
+      "publishedAt": "2026-09-17",
+      "linkKind": "release",
+      "evidenceUrl": "https://yanoljaresearch.blogspot.com/feeds/posts/default",
+      "workKey": "yanolja:brief:963",
+      "fetchedAt": "2026-11-20T06:29:28.517+09:00"
+    }
+  ],
+  "providers": [
+    {
+      "id": "yanolja-blog-atom",
+      "via": "야놀자리서치 공식 Blogger Atom",
+      "channels": [
+        "yanolja-trend",
+        "yanolja-insight",
+        "yanolja-brief"
+      ],
+      "status": "ok",
+      "checkedAt": "2026-11-20T06:29:28.517+09:00",
+      "lastSuccessAt": "2026-11-20T06:29:28.517+09:00",
+      "lastFailureAt": null,
+      "newCount": 5,
+      "seen": 5,
+      "error": null,
+      "pages": 1,
+      "matched": 5,
+      "unclassified": 20
+    }
+  ]
 }
