@@ -369,7 +369,8 @@
     "lastChecked": null,
     "lastItemCount": null,
     "lastError": null,
-    "backfilledAt": null
+    "backfilledAt": null,
+    "boardVerified": true
   },
   {
     "id": "seoul-press",

@@ -105,14 +105,19 @@ function drawFilters() {
   for (const item of feed) counts.set(item.sourceId, (counts.get(item.sourceId) || 0) + 1);
   const sources = (slots.sources || []).filter(s => s.role === 'candidate');
   const buttons = [chip('source', '', '전체 출처', slots.sources && (slots.live || archive.size) ? feed.length : undefined)];
+  const other = [];
   for (const s of sources) {
     const count = counts.get(s.id) || 0;
     const paused = s.status === 'paused';
-    buttons.push(chip('source', s.id, `${s.name}${paused ? ' · 중지' : ''}`, count, paused && !count));
+    const unavailable = s.status !== 'active' && !count;
+    (unavailable ? other : buttons).push(chip('source', s.id, `${s.name}${paused ? ' · 보류' : s.status === 'static' ? ' · 링크 전용' : ''}`, count, unavailable));
   }
   const focused = document.activeElement?.dataset;
   const restore = focused?.group ? [focused.group, focused.value] : null;
   $('#source-filters').replaceChildren(...buttons);
+  $('#other-source-filters').replaceChildren(...other);
+  $('#other-filter-box').hidden=!other.length;
+  $('#other-filter-box summary').textContent=`자동 수집 제외 출처 ${other.length}곳 보기`;
   $('#category-filters').replaceChildren(
     chip('category', '', '전체 주제'),
     ...categories.map(([code, label]) => chip('category', code, `${code} ${label}`))
@@ -252,7 +257,7 @@ function directoryRow(s, title = s.name, requireVerified = false) {
   if (typeof s.note === 'string' && s.note.trim()) body.append(node('p', s.note));
   const collecting = s.role === 'candidate' && s.kind !== 'static' && s.status !== 'static';
   const mode = collecting ? (s.status === 'paused' ? '수집 중지' : s.status === 'active' ? '수집 활성' : '수집 상태 미확인') : '링크 안내';
-  body.append(node('small', `${mode} · ${verified ? '게시판 확인' : '게시판 미확인'} · ${checkedLabel(s)}`));
+  body.append(node('small', `${s.category} · ${mode} · ${verified ? '게시판 확인' : s.role === 'district' || !href ? '게시판 미확인' : '원문 참고 링크'}${collecting ? ' · '+checkedLabel(s) : ''}`));
   row.append(body);
   return row;
 }
@@ -288,7 +293,13 @@ function drawDistricts() {
 function drawDirectories() {
   const sources = slots.sources || [];
   for (const [role, id] of Object.entries(directoryNames)) {
-    const rows = sources.filter(s => s.role === role).map(s => directoryRow(s));
+    const selected = sources.filter(s => s.role === role);
+    const rows = [];
+    const names = Object.fromEntries([...categories,['F1','공시 원문'],['F2','공지 데이터셋'],['F3','고시 교차 확인'],['F4','관광 지점']]);
+    for (const code of [...new Set(selected.map(s=>s.category))].sort()) {
+      if (role !== 'candidate') rows.push(node('li',`${code} · ${names[code] || code}`,'directory-group'));
+      rows.push(...selected.filter(s=>s.category===code).map(s=>directoryRow(s)));
+    }
     $(`#${id}-directory`).replaceChildren(...(rows.length ? rows : [node('li', directoryEmpty(), 'meta')]));
   }
   const collectors = sources.filter(s => s.role === 'candidate' && s.kind !== 'static' && s.status !== 'static');
@@ -303,6 +314,8 @@ function drawDirectories() {
 
 function drawHealth() {
   const h = slots.health;
+  $('#collection-status').textContent = !h || timestamp(h.checkedAt) === null ? '첫 수집 점검 대기 · 발행일과 수집 시각은 다릅니다.' : `마지막 수집 점검 ${dateLabel(timestamp(h.checkedAt),true)} · 성공 ${number(h.succeeded)}곳 / 실패 ${number(h.failed)}곳`;
+  $('#collection-status').classList.toggle('needs-review', Number(h?.failed)>0);
   $('#health-state').textContent = h
     ? `${failures.has('health') ? '최근 요청 실패 · 보관된 기록' : '수집 점검'} · ${dateLabel(timestamp(h.checkedAt), true)}`
     : failures.has('health') ? '점검 기록 대기 · 자료를 읽을 수 없습니다.' : '점검 기록 확인 중';

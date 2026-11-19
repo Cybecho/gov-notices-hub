@@ -38,10 +38,12 @@
             <h1 id="timeline-heading" tabindex="-1">리서치 글 모음</h1>
             <p>호텔 실적부터 여행자 조사까지, 출처별로 읽는 최신 연구와 보고서.</p>
           </header>
+          <p class="meta check-strip" id="collection-status" role="status">첫 수집 점검 대기</p>
           <div class="filters">
             <fieldset>
               <legend>출처</legend>
               <div class="chips" id="source-filters"></div>
+              <details id="other-filter-box" hidden><summary>기타 출처</summary><div class="chips" id="other-source-filters"></div></details>
             </fieldset>
             <fieldset>
               <legend>주제</legend>
@@ -68,7 +70,7 @@
           <header class="section-head">
             <p class="kicker">출처 디렉터리</p>
             <h1 id="boards-heading" tabindex="-1">원문 게시판</h1>
-            <p>글을 수집하는 리서치 출처와 링크로 확인하는 공공기관 게시판입니다.</p>
+            <p>수집 후보와 정적 링크를 구분했습니다. 정부·지자체의 일상 공지는 자동 수집하지 않습니다.</p>
           </header>
           <div id="board-summary" class="summary" role="status"></div>
           <h2 class="rule-title">리서치 출처</h2>
@@ -95,7 +97,7 @@
           <header class="section-head">
             <p class="kicker">조사 도구</p>
             <h1 id="dashboards-heading" tabindex="-1">대시보드·보조 데이터</h1>
-            <p>지표의 조사 범위와 갱신 시점은 각 제공자의 설명에서 확인하세요.</p>
+            <p>자동 수집하지 않는 원문 링크입니다. 제공자마다 조사 범위와 갱신 시점이 다릅니다.</p>
           </header>
           <h2 class="rule-title">대시보드</h2>
           <ul id="dashboard-directory" class="directory"></ul>
@@ -123,14 +125,21 @@
           </dl>
           <h2 class="rule-title">단기임대 데이터 비교</h2>
           <dl class="notes-list">
-            <dt>F1 · AirDNA</dt>
+            <dt>AirDNA</dt>
             <dd>선택한 시장의 지리적 경계, 수집 채널, 중복 숙소 처리 기준을 확인합니다.</dd>
-            <dt>F2 · AirROI</dt>
+            <dt>AirROI</dt>
             <dd>조회 기간과 집계 단위를 기록하고, 평균값과 중앙값을 구분합니다.</dd>
-            <dt>F3 · Airbtics</dt>
+            <dt>Airbtics</dt>
             <dd>운영 숙소의 포함 조건과 예약 가능 숙박일을 집계하는 방식을 확인합니다.</dd>
-            <dt>F4 · 공급자 간 비교 기준</dt>
+            <dt>비교하기 전에</dt>
             <dd>포함 채널, 기간, 평균·중앙값, 운영일과 점유율 분모의 정의가 다르면 수치를 직접 비교할 수 없습니다. 이 자료실은 유료 지표를 전재하지 않습니다.</dd>
+          </dl>
+          <h2 class="rule-title">공시·공고 확인 경로</h2>
+          <dl class="notes-list">
+            <dt>F1 · 공시 원문</dt><dd>서울시와 구청의 고시공고, 서울시보와 관보는 행정 결정의 원문 확인용입니다. 숙박 관련 대형 공고도 시간별 리서치 목록에는 들어오지 않습니다.</dd>
+            <dt>F2 · 공지 데이터셋</dt><dd>열린데이터광장의 시·구 고시공고 메타페이지와 공공데이터포털의 지방공기업 공지를 구분합니다. 제공기관과 수록 범위가 다릅니다.</dd>
+            <dt>F3 · 고시 교차 확인</dt><dd>토지이음과 위원회 시스템으로 고시번호와 심의 결과를 대조한 뒤 원 발행기관에서 확인하세요.</dd>
+            <dt>F4 · 관광 지점(POI)</dt><dd>비짓서울과 TourAPI는 장소 확인용입니다. 숙박 POI 수는 영업 중인 숙소나 새 공고의 수가 아닙니다.</dd>
           </dl>
           <h2 class="rule-title">원문과 이용 조건</h2>
           <p>공지는 원문 링크로 안내합니다. 관악구·중구·마포구를 포함해 공공누리 표시는 게시물과 첨부물마다 확인해야 합니다. 제4유형이 표시된 자료에는 출처 표시, 상업적 이용 금지, 변경 금지 조건이 적용됩니다. 같은 게시판의 다른 자료에도 같은 조건이 적용된다고 볼 수 없습니다.</p>
