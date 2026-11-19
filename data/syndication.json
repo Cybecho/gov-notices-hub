@@ -1,0 +1,6 @@
+{
+  "schema": "issuer-syndication/1",
+  "checkedAt": null,
+  "items": [],
+  "providers": [{"id":"yanolja-blog-atom","via":"야놀자리서치 공식 Blogger Atom","channels":["yanolja-trend","yanolja-insight","yanolja-brief"],"status":"pending","checkedAt":null,"lastSuccessAt":null,"lastFailureAt":null,"newCount":null,"seen":null,"error":null,"pages":null}]
+}

@@ -1,24 +1,26 @@
 # 출처 상태
 
-점검 기준 2026-11-19 KST. 제목·게시일·출처·원문 소개 링크만 공개합니다. `paused`는 검토 전 네트워크 요청 없음, `static`은 수동 확인 링크 전용입니다. 자료가 없다는 뜻이 아닙니다. 상태·마지막 실행 시각은 [운영 레지스트리](https://cybecho.github.io/gov-notices-hub/data/sources.json)와 [실행 건강 기록](https://cybecho.github.io/gov-notices-hub/data/health.json)에서 확인하세요.
+2026-11-20 KST 기준. [채널별 수록 범위](READER-COVERAGE.md)는 독자가 읽을 수 있는 자료를, 아래 상태는 **원사이트 직접 수집** 여부를 나타냅니다. 15개 채널 중 직접 HTML 수집이 활성인 곳은 오픈서베이 1곳입니다. `paused`는 원사이트 요청 보류, `static`은 직접 수집 없이 참고 링크만 제공한다는 뜻입니다. 야놀자 3개 연구 채널은 원사이트를 요청하지 않고 공식 Blogger 배포 피드를 공유합니다.
 
-| 후보 | 최초 판정 | 목록·참고 | 이용 조건 및 제한 |
+[운영 레지스트리](https://cybecho.github.io/gov-notices-hub/data/sources.json) · [실행 기록](https://cybecho.github.io/gov-notices-hub/data/health.json)
+
+| 채널 | 직접 수집 | 목록·참고 | 이용 조건 및 제한 |
 |---|---|---|---|
-| 야놀자 동향보고서 목록 | paused | [원문](https://www.yanolja-research.com/trend/list?lang=kr) | robots.txt에서 차단 HTML 응답(HEAD 403)을 확인해 목록 접근 중단. 공개 검색 결과의 개인정보 처리방침은 자동 수집 허가가 아님. 첨부 후보 주소·항목·피드 미검증. 자동 수집 및 백필 보류. 첨부에 명시된 참고 원문을 수동 링크로만 표시합니다. |
-| 야놀자 인사이트 목록 | paused | [원문](https://www.yanolja-research.com/insight/list?lang=kr) | robots.txt에서 차단 HTML 응답(HEAD 403)을 확인해 목록 접근 중단. 공개 검색 결과의 개인정보 처리방침은 자동 수집 허가가 아님. 첨부 후보 주소·항목·피드 미검증. 자동 수집 및 백필 보류. 첨부에 명시된 참고 원문을 수동 링크로만 표시합니다. |
-| 야놀자 브리프 목록 | paused | 미확인 | robots.txt에서 차단 HTML 응답(HEAD 403)을 확인해 목록 접근 중단. 공개 검색 결과의 개인정보 처리방침은 자동 수집 허가가 아님. 첨부 후보 주소·항목·피드 미검증. 자동 수집 및 백필 보류. |
-| 야놀자 보도자료 목록 | paused | 미확인 | robots.txt에서 차단 HTML 응답(HEAD 403)을 확인해 목록 접근 중단. 공개 검색 결과의 개인정보 처리방침은 자동 수집 허가가 아님. 첨부 후보 주소·항목·피드 미검증. 자동 수집 및 백필 보류. |
-| 야놀자 데이터 다운로드 | paused | [원문](https://www.yanolja-research.com/datalab/download?lang=kr) | robots.txt에서 차단 HTML 응답(HEAD 403)을 확인해 목록 접근 중단. 공개 검색 결과의 개인정보 처리방침은 자동 수집 허가가 아님. 첨부 후보 주소·항목·피드 미검증. 자동 수집 및 백필 보류. 첨부에 명시된 참고 원문을 수동 링크로만 표시합니다. |
-| 서울관광재단 자료실 | paused | [원문](https://www.sto.or.kr/chart) | 공식 홈페이지 메뉴에서 재단 자료실 링크를 확인. robots.txt(200)의 전체 에이전트 제외 경로에 이 메뉴는 없으나, 홈페이지에서 자동 수집에 적용할 이용약관이나 허가를 확인하지 못함. 자료 행·페이지 이동·피드 계약 미검증. 자동 수집 및 백필 보류. |
-| 서울관광재단 실태조사 | paused | [원문](https://www.sto.or.kr/survey) | 공식 홈페이지 메뉴에서 조사/통계 링크를 확인. robots.txt(200)의 전체 에이전트 제외 경로에 이 메뉴는 없으나, 홈페이지에서 자동 수집에 적용할 이용약관이나 허가를 확인하지 못함. 자료 행·페이지 이동·피드 계약 미검증. 자동 수집 및 백필 보류. |
-| CBRE 서울 호텔 리포트 | paused | [원문](https://www.cbre.com.sg/insights/reports/seoul-hotel-investment-same-rooms-new-value) | 싱가포르 robots.txt HTTP 403. 첨부는 단일 보고서로 목록이 아니다. 본사 약관은 스크래핑을 제한하지만 싱가포르 전용 조건은 확인되지 않았다. 첨부에 명시된 참고 원문을 수동 링크로만 표시합니다. |
-| JLL APAC Hotel Market Dynamics | static | [원문](https://research.jllapsites.com/sectors/hotels) | Hotels 메뉴는 서울 등 도시별 시장 인사이트이며 분기 보고서 목록으로 확인되지 않았다. 연구 사이트 robots는 차단하지 않으나 약관은 서면 허락 없는 전시·배포를 제한한다. 본사 약관은 자동 질의·DB 구축을 제한하며 본사 robots는 첨부 APAC PDF 경로를 차단한다. [근거](https://research.jllapsites.com/terms-of-use-2) |
-| C&W 서울 호스피탤리티 리포트 | paused | 미확인 | robots.txt HTTP 403. 공식 서울 호텔 자료는 단일 보고서이며 전체 Insights는 대상이 아니다. 공식 영문 약관은 스크래핑·딥링크 등 재사용을 제한한다. [근거](https://www.cushmanwakefield.com/en/united-states/terms-of-use) |
-| HVS Market Snapshot | static | [원문](https://hvs.com/publications) | 호텔 연구 출판물 메뉴에는 유료 자료도 있다. robots 차단은 없으나 약관은 게시·재배포에 명시적 허가를 요구한다. HVS News RSS는 거래·행사·기업 소식 혼합으로 제외했다. [근거](https://hvs.com/aboutHVS/termsofuse) |
-| Phocuswright Research Updates | paused | [원문](https://www.phocuswright.com/Travel-Research/Research-Updates) | 공식 메뉴 경로는 확인했지만 robots.txt HTTP 403으로 목록을 요청하지 않았다. FAQ는 연구자료 재배포에 사전 허가를 요구하며 목록 자동 수집·재게시 허가는 확인되지 않았다. PhocusWire 뉴스는 제외했다. [근거](https://www.phocuswright.com/About-Us/Privacy-Policy) |
-| Skift Research | static | [원문](https://research.skift.com/) | 연구 서비스 입구만 제공한다. robots 검색 허용 신호 자체는 자동 수집에 대한 동의가 아니며 약관은 자동 수집에 사전 서면 허락을 요구한다. 예정표는 발행 목록이 아니다. 일반 뉴스·유료 자료는 제외했다. [근거](https://skift.com/terms/) |
-| 컨슈머인사이트 보도자료 | static | [원문](https://www.consumerinsight.co.kr/boardList?cate=trav) | 공식 여행 목록만 연결. robots.txt는 일반 공개 경로 허용이지만 공식 보도자료는 언론사 기사 작성 외 복제·배포·게시·전송·2차 활용에 사전 서면 동의를 요구한다. 자동 수집과 백필 제외. termsUrl은 개별 자료에 적용되는 권리 고지 위치. [근거](https://www.consumerinsight.co.kr/boardView?id=pr10_list&no=3838&schFlag=0) |
-| 오픈서베이 블로그 | active | [원문](https://blog.opensurvey.co.kr/category/trendreport/) | 공식 Trend report 목록에서 여행·숙박 관련 제목, 공개 블로그 소개 페이지 주소, 표시된 발행일만 사용한다. 출처는 오픈서베이. 공식 활용 가이드에 따라 PDF 파일·PDF 링크·내용·데이터는 배포하지 않는다. 상세 페이지 및 다운로드 요청 없음. [근거](https://support.opensurvey.io/ko/articles/8522848-오픈서베이-콘텐츠-인용-및-활용하기) |
+| 야놀자 동향보고서 목록 | `paused` | [열기](https://www.yanolja-research.com/trend/list?lang=kr) | 2023년 1분기~2026년 3분기 숙박업 동향보고서 15호를 확인했습니다. 원사이트 robots 확인 시 403으로 직접 수집 중단. 별도 공식 Blogger Atom에서 배포분만 발견합니다. |
+| 야놀자 인사이트 목록 | `paused` | [열기](https://www.yanolja-research.com/insight/list?lang=kr) | Vol.1~48 중 원본 브리프 3건을 제외한 인사이트 45건을 확인했습니다. 원사이트 robots 확인 시 403으로 직접 수집 중단. 별도 공식 Blogger Atom에서 배포분만 발견합니다. |
+| 야놀자 브리프 목록 | `paused` | [열기](https://www.yanolja-research.com/brief/list?lang=kr) | 현행 Vol.1~18과 원본 브리프 3건을 수록합니다. 같은 권호라도 원문이 다를 수 있습니다. 원사이트 robots 확인 시 403으로 직접 수집 중단. 별도 공식 Blogger Atom에서 배포분만 발견합니다. |
+| 야놀자 보도자료 목록 | `paused` | [열기](https://www.yanolja-research.com/media/list?lang=kr&sub_type=2) | 발행처 자체 보도자료 18건을 선별했습니다. 언론 전재와 Blogger 일반 글은 제외합니다. 직접 수집은 보류합니다. |
+| 야놀자 데이터 다운로드 | `paused` | [열기](https://www.yanolja-research.com/datalab/download?lang=kr) | 공동 목록에서 숙박업 실적 지표 9행을 확인했습니다. 개별 상세 페이지가 없어 목록으로만 연결합니다. 최종 수정일은 발행일이 아닙니다. |
+| 서울관광재단 자료실 | `paused` | [열기](https://www.sto.or.kr/chart) | 재단 자료실의 개별 게시글 8건을 선별했습니다. 상세에서 확인한 작성일만 사용합니다. 정기 수집 허가·공식 피드 미확인. |
+| 서울관광재단 실태조사 | `paused` | [열기](https://www.sto.or.kr/survey) | 조사·통계 게시판 13건을 목록 작성일 기준으로 선별했습니다. 공지 중복은 제외합니다. 정기 수집 허가·공식 피드 미확인. |
+| CBRE 서울 호텔 리포트 | `paused` | [열기](https://www.cbre.com.sg/insights/reports/seoul-hotel-investment-same-rooms-new-value) | 서울·한국 및 아시아태평양 호텔 연구 상세 링크 5건을 선별했습니다. 싱가포르 robots.txt 403 및 자동 수집 제한으로 직접 수집 보류. |
+| JLL APAC Hotel Market Dynamics | `static` | [열기](https://research.jllapsites.com/sectors/hotels) | APPD 분기별 호텔 인사이트 3건과 서울 분기 자료 1건을 선별했습니다. 자동 질의·체계적 수집 제한으로 정기 요청 없음. [이용 조건](https://research.jllapsites.com/terms-of-use-2) |
+| C&W 서울 호스피탤리티 리포트 | `paused` | 원사이트 보고서 링크 미제공 | 뉴스와이어 기업 뉴스룸에서 C&W 코리아가 직접 배포한 기사 2건입니다. 보고서 2종이 아닙니다. 원사이트 약관상 스크래핑·딥링크 제한. 보고서 주소를 추정하지 않으며 뉴스와이어도 정기 요청하지 않습니다. [이용 조건](https://www.cushmanwakefield.com/en/united-states/terms-of-use) |
+| HVS Market Snapshot | `static` | [열기](https://hvs.com/publications) | 2022~2026년 아시아태평양 Market Snapshot 5건의 소개 페이지로 연결합니다. 자료 재배포 허가와 구별하며 뉴스 RSS·사이트맵을 정기 조회하지 않습니다. [이용 조건](https://hvs.com/aboutHVS/termsofuse) |
+| Phocuswright Research Updates | `paused` | [열기](https://www.phocuswright.com/Travel-Research/Research-Updates) | 숙박·단기임대 연구 상품과 Research Updates 12건을 선별했습니다. 확인된 발행 연월만 표기합니다. 자료 재배포·정기 수집 없음. [이용 조건](https://www.phocuswright.com/About-Us/Privacy-Policy) |
+| Skift Research | `static` | [열기](https://research.skift.com/) | 여행·호텔·단기임대 연구 상세 링크 9건을 선별했습니다. 예정표·일반 뉴스는 제외하며 유료 본문을 가져오지 않습니다. [이용 조건](https://skift.com/terms/) |
+| 컨슈머인사이트 보도자료 | `static` | [열기](https://www.consumerinsight.co.kr/boardList?cate=trav) | 공식 여행 목록 첫 페이지의 한국어 자료 14건을 선별했습니다. 같은 조사의 영어판은 제외합니다. 비언론사 재사용 제한에 따라 직접 수집 및 뉴스와이어·네이버 정기 요청 없음. [이용 조건](https://www.consumerinsight.co.kr/boardView?id=pr10_list&no=3838&schFlag=0) |
+| 오픈서베이 블로그 | `active` | [열기](https://blog.opensurvey.co.kr/category/trendreport/) | 공식 Trend report 목록에서 여행·숙박 관련 제목, 공개 블로그 소개 페이지 주소, 표시된 발행일만 사용한다. 출처는 오픈서베이. 공식 활용 가이드에 따라 PDF 파일·PDF 링크·내용·데이터는 배포하지 않는다. 상세 페이지 및 다운로드 요청 없음. [이용 조건](https://support.opensurvey.io/ko/articles/8522848-오픈서베이-콘텐츠-인용-및-활용하기) |
 
 ## 서울 25개구 (시간별 수집 제외)
 

@@ -1,7 +1,9 @@
 import {
   categories, districts, timestamp, dateLabel, isNew, searchText,
-  badgeTone, sourceLink, archiveEntries, archiveItems, makeFeed, filterFeed
+  badgeTone, sourceLink, archiveEntries, archiveItems, makeFeed
 } from './view-model.mjs';
+
+import { toReaderFeed } from './reader.mjs';
 
 const $ = selector => document.querySelector(selector);
 const root = new URL('../', import.meta.url);
@@ -10,7 +12,7 @@ const filters = { source: '', category: '', query: '' };
 const panels = [...document.querySelectorAll('main > section')];
 const navLinks = [...document.querySelectorAll('#navigation a')];
 const archive = new Map();
-const slots = { sources: null, live: null, health: null, index: null };
+const slots = { reader: null, sources: null, live: null, health: null, index: null };
 const failures = new Map();
 let archiveFailures = 0;
 let archivePending = false;
@@ -105,20 +107,11 @@ function drawFilters() {
   const counts = new Map();
   for (const item of feed) counts.set(item.sourceId, (counts.get(item.sourceId) || 0) + 1);
   const sources = (slots.sources || []).filter(s => s.role === 'candidate');
-  const buttons = [chip('source', '', '전체 출처', slots.sources && (slots.live || archive.size) ? feed.length : undefined)];
-  const other = [];
-  for (const s of sources) {
-    const count = counts.get(s.id) || 0;
-    const paused = s.status === 'paused';
-    const unavailable = s.status !== 'active' && !count;
-    (unavailable ? other : buttons).push(chip('source', s.id, `${s.name}${paused ? ' · 보류' : s.status === 'static' ? ' · 링크 전용' : ''}`, count, unavailable));
-  }
+  const buttons = [chip('source', '', '전체 출처', feed.length), ...sources.map(s => chip('source', s.id, s.name, counts.get(s.id) || 0))];
+  $('#filter-summary').textContent = '출처·주제 선택 · '+[sources.find(s=>s.id===filters.source)?.name || '전체 출처', categories.find(([id])=>id===filters.category)?.[1] || '전체 주제'].join(' / ');
   const focused = document.activeElement?.dataset;
   const restore = focused?.group ? [focused.group, focused.value] : null;
   $('#source-filters').replaceChildren(...buttons);
-  $('#other-source-filters').replaceChildren(...other);
-  $('#other-filter-box').hidden=!other.length;
-  $('#other-filter-box summary').textContent=`자동 수집 제외 출처 ${other.length}곳 보기`;
   $('#category-filters').replaceChildren(
     chip('category', '', '전체 주제'),
     ...categories.map(([code, label]) => chip('category', code, `${code} ${label}`))
@@ -132,15 +125,18 @@ function drawFilters() {
 
 function articleRow(item, now) {
   const row = node('li', null, 'article');
-  const date = node(item.published === null ? 'span' : 'time', dateLabel(item.published), 'date');
+  row.dataset.kind = item.catalog ? 'catalog' : 'direct';
+  row.dataset.source = item.sourceId;
+  const date = node(item.published === null ? 'span' : 'time', item.published === null ? '발행일 미확인' : dateLabel(item.published), 'date');
   if (item.published !== null) date.dateTime = new Date(item.published).toISOString();
   const body = node('div', null, 'article-body');
   const meta = node('div', null, 'article-meta');
   meta.append(node('span', item.sourceName, `badge ${badgeTone(item.sourceId)}`));
   const category = categories.find(([code]) => code === item.category);
   if (category) meta.append(node('span', category.join(' · '), 'topic'));
-  if (isNew(item.fetched, now)) {
-    const fresh = node('span', 'NEW', 'fresh');
+  meta.append(node('span', item.catalog ? '공식 목록 항목' : methodLabel(item), 'method'));
+  if (item.method === 'hourly' && isNew(item.fetched, now)) {
+    const fresh = node('span', 'NEW · 최초 색인', 'fresh');
     fresh.setAttribute('aria-label', '최근 24시간 이내 최초 수집');
     meta.append(fresh);
   }
@@ -149,18 +145,22 @@ function articleRow(item, now) {
     const link = external(item.href, item.title);
     const arrow = node('span', ' ↗', 'arrow');
     arrow.setAttribute('aria-hidden', 'true');
-    link.append(arrow, node('span', ' (원문, 새 창)', 'sr-only'));
+    if (item.catalog) link.append(node('span','이 항목이 있는 공식 목록 ↗','index-action'), node('span',' (새 창)','sr-only'));
+    else link.append(arrow, node('span', ' (원문, 새 창)', 'sr-only'));
     heading.append(link);
   } else {
     heading.append(node('span', item.title), node('small', '원문 주소 미확인', 'missing'));
   }
   body.append(meta, heading);
+  const info = [item.periodLabel && '확인된 발행월 '+item.periodLabel+' (일자 미공개)', item.label || (!item.catalog && item.linkKind==='release' && '발행처 보도자료'), item.catalog && (item.identifier!==item.title?'목록 식별자 '+item.identifier:'공식 목록에서 같은 자료명으로 확인'), item.modified && '목록 수정일 '+dateLabel(item.modified)].filter(Boolean);
+  if(info.length) body.append(node('small',info.join(' · '),'record-info'));
+  for(const e of item.editions || []) { const small=node('small',null,'record-info');small.append(external(e.href,'같은 자료의 영문 배포본 ↗'),document.createTextNode(e.published!==null?' · 배포일 '+dateLabel(e.published):''));body.append(small); }
   row.append(date, body);
   return row;
 }
 
 function drawFeed(focusIndex = -1) {
-  const items = filterFeed(feed, filters);
+  const items = matching();
   const shown = Math.min(limit, items.length);
   const now = Date.now();
   const list = $('#articles');
@@ -169,8 +169,9 @@ function drawFeed(focusIndex = -1) {
   const more = $('#load-more');
   more.hidden = shown >= items.length;
   more.textContent = `글 ${Math.min(pageSize, items.length - shown)}개 더 보기`;
-  $('#result-count').textContent = items.length ? `${number(items.length)}건 중 ${number(shown)}건 표시` : '';
-  const available = slots.live !== null || archive.size > 0;
+  const indexed = items.filter(i=>i.catalog).length;
+  $('#result-count').textContent = items.length ? `${number(items.length)}건 중 ${number(shown)}건 표시 · 개별 원문 ${number(items.filter(i=>!i.catalog && i.href).length)} · 공식 목록 항목 ${number(indexed)}` : '';
+  const available = Boolean(slots.reader || (failures.has('reader') && (slots.live || archive.size)));
   let message = '';
   if (!slots.sources) message = failures.has('sources') ? '출처 목록을 읽을 수 없어 글 분류를 확인할 수 없습니다.' : '출처를 확인하고 있습니다.';
   else if (!available) message = failures.has('live') ? '최신 글 목록을 불러오지 못했습니다.' : '글 목록을 불러오는 중입니다.';
@@ -179,61 +180,65 @@ function drawFeed(focusIndex = -1) {
     else if (filters.query || filters.source || filters.category) message = '현재 자료에 검색 조건과 일치하는 글이 없습니다.';
     else message = '현재 불러온 자료에 리서치 글이 없습니다.';
   } else if (failures.has('live')) message = '최신 목록을 읽지 못해 기존에 확인한 글을 표시합니다.';
+  if (slots.reader && !items.length && available && slots.sources) message = '현재 색인에서 조건에 맞는 항목을 찾지 못했습니다. 출처의 발행 유무를 뜻하지 않습니다.';
+  if (slots.reader && items.length) message = '';
+  if (failures.has('reader')) message = [slots.reader ? '통합 목록 갱신 실패 · 이전 통합 목록을 표시합니다.' : '통합 목록을 읽지 못해 기존 공지·보관 자료로 대신합니다.',message].filter(Boolean).join(' ');
   $('#feed-state').textContent = message;
   $('#feed-state').hidden = !message;
-  $('#updated').textContent = `최신 목록 갱신 · ${dateLabel(timestamp(slots.live?.updatedAt), true)}`;
+  $('#updated').textContent = `${slots.reader ? '통합 목록 생성' : '이전 목록 갱신'} · ${dateLabel(timestamp((slots.reader || slots.live)?.updatedAt), true)}`;
   if (focusIndex >= 0 && rows[focusIndex]) {
     const target = rows[focusIndex].querySelector('a') || rows[focusIndex];
     if (!target.matches('a')) target.tabIndex = -1;
     target.focus();
   }
-  // Re-evaluate visible badges at their next transition, including future timestamps.
-  clearTimeout(freshnessTimer);
-  let next = Infinity;
-  for (const item of items.slice(0, shown)) {
-    if (item.fetched === null) continue;
-    const boundary = item.fetched > now ? item.fetched : item.fetched + 86_400_000;
-    if (boundary > now) next = Math.min(next, boundary);
-  }
-  if (Number.isFinite(next)) {
-    freshnessTimer = setTimeout(() => {
-      // Only change badges in place so keyboard focus stays on the article.
-      const visible = items.slice(0, shown);
-      const at = Date.now();
-      rows.forEach((row, index) => {
-        const meta = row.querySelector('.article-meta');
-        const fresh = articleRow(visible[index], at).querySelector('.fresh');
-        meta.querySelector('.fresh')?.remove();
-        if (fresh) meta.append(fresh);
-      });
-      scheduleBadgeUpdates();
-    }, Math.min(next - now + 1, 2_147_483_647));
-  }
+  scheduleBadgeUpdates();
 }
 
+function matching() {
+  const needle = searchText(filters.query);
+  return feed.filter(i=>(!filters.source || filters.source===i.sourceId) && (!filters.category || filters.category===i.category) && (!needle || searchText([i.title,i.sourceName,i.sourceId,i.category,categories.find(([k])=>k===i.category)?.[1],i.identifier].filter(Boolean).join(' ')).includes(needle)));
+}
 function scheduleBadgeUpdates() {
   clearTimeout(freshnessTimer);
-  const visible = filterFeed(feed, filters).slice(0, limit);
-  const now = Date.now();
-  let next = Infinity;
-  visible.forEach((item, i) => {
-    const meta = $('#articles').children[i]?.querySelector('.article-meta');
-    if (!meta || item.fetched === null) return;
-    const fresh = meta.querySelector('.fresh');
-    if (fresh && !isNew(item.fetched, now)) fresh.remove();
-    if (!fresh && isNew(item.fetched, now)) meta.append(articleRow(item, now).querySelector('.fresh'));
-    const at = item.fetched > now ? item.fetched : item.fetched + 86_400_000;
-    if (at > now) next = Math.min(next, at);
+  const now=Date.now(); let next=Infinity;
+  matching().slice(0,limit).forEach((i,k)=>{
+    if(i.method!=='hourly' || !Number.isFinite(i.fetched)) return;
+    const meta=$('#articles').children[k]?.querySelector('.article-meta'); if(!meta) return;
+    const badge=meta.querySelector('.fresh');
+    if(badge && !isNew(i.fetched,now)) badge.remove();
+    if(!badge && isNew(i.fetched,now)) meta.append(articleRow(i,now).querySelector('.fresh'));
+    const boundary=i.fetched>now?i.fetched:i.fetched+86400000;
+    if(boundary>now) next=Math.min(next,boundary);
   });
-  if (Number.isFinite(next)) {
-    freshnessTimer = setTimeout(scheduleBadgeUpdates, Math.min(next - now + 1, 2_147_483_647));
-  }
+  if(Number.isFinite(next)) freshnessTimer=setTimeout(scheduleBadgeUpdates,Math.min(next-now+1,2147483647));
 }
-
+function methodLabel(item) {
+  if(item.method==='reference') return '개별 확인';
+  if(item.method==='index') return '색인 확인';
+  const providers=Array.isArray(slots.reader?.discovery?.providers)?slots.reader.discovery.providers:[];
+  return providers.some(p=>Array.isArray(p.channels) && p.channels.includes(item.sourceId) && /feed|rss|atom/i.test([p.id,p.via].join(' '))) ? '시간별 · 배포 피드' : '시간별 · 직접 확인';
+}
 function updateFeed() {
-  feed = makeFeed(slots.sources || [], slots.live?.items || [], archive.values());
-  drawFilters();
-  drawFeed();
+  const sources=slots.sources || [], bundle=slots.reader;
+  if(bundle) {
+    const direct=sources.length ? toReaderFeed({...bundle,catalogEntries:[]},sources) : [];
+    const candidates=new Map(sources.filter(s=>s.role==='candidate').map(s=>[s.id,s]));
+    const catalog=new Map();
+    for(const e of bundle.catalogEntries || []) {
+      const s=candidates.get(e?.sourceId), href=sourceLink(e?.listUrl,s);
+      if(!s || !href || !e.identifier || !e.title) continue;
+      const key=JSON.stringify([s.id,e.identifier]);
+      catalog.set(key,{key,catalog:true,identifier:e.identifier,title:e.title,sourceName:s.name,sourceId:s.id,category:s.category,href,method:'index',published:null,fetched:null,modified:timestamp(e.modifiedAt,true)});
+    }
+    feed=[...direct,...catalog.values()].sort((a,b)=>(b.published??-Infinity)-(a.published??-Infinity) || (b.periodLabel||'').localeCompare(a.periodLabel||'') || a.title.localeCompare(b.title,'ko') || a.key.localeCompare(b.key));
+  } else feed=failures.has('reader') ? makeFeed(sources,slots.live?.items || [],archive.values()).map(i=>({...i,method:'hourly'})) : [];
+  const refs=(bundle?.highlights || []).flatMap(h=>{
+    const href=sourceLink(h?.url), s=sources.find(s=>s.id===h?.sourceId);
+    if(!href || !h.title) return [];
+    const li=node('li'); li.append(external(href,h.title+' ↗'),node('small',[s?.name || h.sourceId,h.publishedAt || '발행일 미확인','지정 참고 링크'].join(' · '))); return [li];
+  });
+  $('#reader-highlights').hidden=!refs.length; $('#highlight-links').replaceChildren(...refs);
+  drawFilters(); drawFeed(); drawHealth();
 }
 
 function checkedLabel(s) {
@@ -308,15 +313,37 @@ function drawDirectories() {
   const paused = collectors.filter(s => s.status === 'paused').length;
   const verified = sources.filter(s => s.boardVerified === true && sourceLink(s.listUrl, s)).length;
   $('#board-summary').textContent = slots.sources
-    ? `수집 활성 ${active}곳 · 수집 중지 ${paused}곳 · 링크 안내 ${sources.length - collectors.length}곳 · 전체 출처 중 게시판 확인 ${verified}곳`
+    ? `직접 수집 활성 ${active}곳 · 직접 수집 중지 ${paused}곳 · 링크 안내 ${sources.length - collectors.length}곳 · 확인된 게시판 ${verified}곳. 발행사 피드 점검은 조사 노트에서 별도로 확인합니다.`
     : directoryEmpty();
   drawDistricts();
 }
 
 function drawHealth() {
   const h = slots.health;
-  $('#collection-status').textContent = !h || timestamp(h.checkedAt) === null ? '첫 수집 점검 대기 · 발행일과 수집 시각은 다릅니다.' : `마지막 수집 점검 ${dateLabel(timestamp(h.checkedAt),true)} · 성공 ${number(h.succeeded)}곳 / 실패 ${number(h.failed)}곳`;
-  $('#collection-status').classList.toggle('needs-review', Number(h?.failed)>0);
+  const discovery=slots.reader?.discovery;
+  const providers=Array.isArray(discovery?.providers)?discovery.providers:[];
+  const srcs=slots.sources || [];
+  const channelName=id=>srcs.find(s=>s.id===id)?.name || id;
+  const statuses={ok:'성공',failed:'실패',paused:'중지',pending:'대기'};
+  const labels=x=>Array.isArray(x)?x.map(channelName).join(' · '):'';
+  $('#discovery-status').hidden=!discovery;
+  $('#discovery-time').textContent=discovery ? '발견 경로 점검 '+dateLabel(timestamp(discovery.checkedAt),true)+(Array.isArray(discovery.channels) && discovery.channels.every(x=>typeof x==='string') ? ' · 대상 '+labels(discovery.channels):'') : '';
+  $('#discovery-providers').replaceChildren(...providers.map(p=>{
+    const li=node('li');li.append(node('h3',[p.via || p.id,statuses[p.status] || '상태 미확인'].join(' · ')),node('small',[labels(p.channels),dateLabel(timestamp(p.checkedAt),true),'최초 색인 '+number(p.newCount)+'건',p.error].filter(Boolean).join(' · ')));return li;
+  }));
+  const ok=[],bad=[];
+  const add=(arr,value)=>{const t=timestamp(value);if(t!==null) arr.push(t)};
+  for(const p of providers) {if(p.status==='ok') add(ok,p.checkedAt);if(p.status==='failed'||p.failed>0)add(bad,p.checkedAt);add(ok,p.lastSuccessAt);add(bad,p.lastFailureAt);}
+  if(h?.succeeded>0)add(ok,h.checkedAt); if(h?.failed>0)add(bad,h.checkedAt);
+  add(ok,h?.lastSuccessAt);add(bad,h?.lastFailureAt);
+  $('#hourly-history').textContent='마지막 성공 '+(ok.length?dateLabel(Math.max(...ok),true):'기록 없음')+' · 마지막 실패 '+(bad.length?dateLabel(Math.max(...bad),true):'기록 없음');
+  $('#collection-status').textContent = !h || timestamp(h.checkedAt) === null ? '첫 수집 점검 대기 · 발행일과 수집 시각은 다릅니다.' : `직접 수집 점검 ${dateLabel(timestamp(h.checkedAt),true)} · 성공 ${number(h.succeeded)}곳 / 실패 ${number(h.failed)}곳`;
+  if(discovery) {
+    const count=key=>providers.filter(p=>p.status===key).length;
+    const automatic=new Set([...srcs.filter(s=>s.role==='candidate'&&s.status==='active').map(s=>s.id),...providers.filter(p=>p.status==='ok').flatMap(p=>p.channels)]);
+    $('#collection-status').textContent+=' · 배포 피드 성공 '+count('ok')+' / 실패 '+count('failed')+(count('paused')?' / 중지 '+count('paused'):'')+' · 자동 경로 '+automatic.size+'개 채널';
+  }
+  $('#collection-status').classList.toggle('needs-review', Number(h?.failed)>0 || providers.some(p=>p.status==='failed'));
   $('#health-state').textContent = h
     ? `${failures.has('health') ? '최근 요청 실패 · 보관된 기록' : '수집 점검'} · ${dateLabel(timestamp(h.checkedAt), true)}`
     : failures.has('health') ? '점검 기록 대기 · 자료를 읽을 수 없습니다.' : '점검 기록 확인 중';
@@ -339,7 +366,7 @@ function drawStatus() {
   else if (archiveFailures) message = `보관 파일 ${archiveFailures}개 요청 실패 · 읽을 수 있는 글을 표시합니다.`;
   else if (failures.has('index')) message = '보관 색인 갱신 실패 · 기존 보관 목록을 표시합니다.';
   else message = index.length ? `보관 파일 ${index.length}개 확인 · 최신 목록과 중복을 제거했습니다.` : '보관 색인 확인 · 등록된 보관 파일 0개';
-  $('#archive-state').textContent = message;
+  $('#archive-state').textContent = slots.reader ? '이전 공지·보관 목록은 통합 목록을 이용할 수 없을 때만 표시합니다.' : message;
   const issues = [...failures.values()];
   if (archiveFailures) issues.push('보관 파일');
   $('#data-status').textContent = loading ? '자료 확인 중' : issues.length ? `${issues.join(' · ')} 확인 필요` : '자료 불러오기 완료';
@@ -414,6 +441,10 @@ async function load(manual=false) {
       drawDirectories();
       updateFeed();
     }),
+    readSlot('reader','통합 목록','data/reader.json',value=>{
+      if(value?.schema!=='seoul-links-reader/2' || !Array.isArray(value.items) || [value.catalogEntries,value.highlights].some(v=>v!=null && !Array.isArray(v))) throw Error('통합 목록 형식 오류');
+      return value;
+    },updateFeed),
     readSlot('live', '최신 글', 'data/notices.json', value => {
       if (!Array.isArray(value?.items)) throw new Error('글 목록 형식 오류');
       return value;
