@@ -1,0 +1,98 @@
+name: Research links hourly and Pages
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions: {contents: read}
+concurrency: {group: gov-notices-hub-release, cancel-in-progress: false}
+jobs:
+  verify:
+    if: github.repository == 'Cybecho/gov-notices-hub' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    outputs:
+      persist: ${{ steps.judge.outputs.persist }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with: {node-version: 24, cache: npm}
+      - run: npm ci --ignore-scripts --no-fund
+      - run: npm run typecheck && npm test && npm run validate
+      - name: Collect approved lists only, without checkout credentials
+        if: github.event_name != 'push'
+        run: npm run collect
+      - run: npm run validate && npm run build
+      - run: npx --no-install playwright install --with-deps --only-shell chromium
+      - run: npm run test:browser
+      - name: Stage only validated history, sources and status notes
+        id: judge
+        run: |
+          set -euo pipefail
+          persist=no
+          if test -f .run/persist && test "$(cat .run/persist)" = yes; then
+            persist=yes; mkdir -p "$RUNNER_TEMP/verified/docs"; cp -R data "$RUNNER_TEMP/verified/data"; cp docs/SOURCE-STATUS.md "$RUNNER_TEMP/verified/docs/";
+            if test -f docs/FIRST-BACKFILL.md; then cp docs/FIRST-BACKFILL.md "$RUNNER_TEMP/verified/docs/"; fi
+          fi
+          echo "persist=$persist" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: steps.judge.outputs.persist == 'yes'
+        with:
+          name: verified-metadata
+          path: ${{ runner.temp }}/verified
+          retention-days: 2
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9
+        with: {path: .site}
+  persist:
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions: {contents: write}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: {fetch-depth: 1}
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        if: needs.verify.outputs.persist == 'yes'
+        with: {name: verified-metadata, path: '${{ runner.temp }}/verified'}
+      - name: Require unchanged base and commit only new or changed data
+        env:
+          PERSIST: ${{ needs.verify.outputs.persist }}
+        run: |
+          set -euo pipefail
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$(git rev-parse HEAD)" || { echo 'Main advanced. Do not overwrite a concurrent change.'; exit 1; }
+          if test "$PERSIST" = yes; then
+            d="$RUNNER_TEMP/verified"; cp "$d/data/"{health,notices,sources}.json data/; cp "$d/data/archive/"*.json data/archive/; cp "$d/docs/SOURCE-STATUS.md" docs/;
+            if test -f "$d/docs/FIRST-BACKFILL.md"; then cp "$d/docs/FIRST-BACKFILL.md" docs/; fi
+            git add -- data docs/SOURCE-STATUS.md; if test -f docs/FIRST-BACKFILL.md; then git add -- docs/FIRST-BACKFILL.md; fi
+            git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com';
+            if ! git diff --cached --quiet; then git commit -m 'Update verified research link metadata'; git push origin HEAD:main; fi
+          fi
+  deploy:
+    needs: [verify, persist]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    permissions: {pages: write, id-token: write}
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d
+      - id: pages
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346
+  live:
+    needs: deploy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    permissions: {contents: read}
+    steps:
+      - name: Verify public provenance, latest source state and count
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          const url='https://cybecho.github.io/gov-notices-hub/',id=process.env.GITHUB_RUN_ID;
+          const get=async p=>{const r=await fetch(url+p+'?verify='+id+'-'+Date.now(),{redirect:'error',signal:AbortSignal.timeout(10000)});assert.equal(r.status,200);return r.json();};
+          let proof;for(let i=0;i<12;i++){try{proof=await get('build-provenance.json');if(proof.workflowRun===id)break;}catch{}await new Promise(r=>setTimeout(r,5000));}assert.equal(proof?.workflowRun,id);
+          const [n,s,h,a]=await Promise.all(['data/notices.json','data/sources.json','data/health.json','data/archive/index.json'].map(get));assert.equal(s.filter(x=>x.role==='district').length,25);assert.equal(n.items.length+a.files.reduce((v,f)=>v+f.count,0),h.items);assert.equal(h.attempted,h.succeeded+h.failed);console.log('PUBLIC OK',id,n.items.length,'items',h.checkedAt,h.succeeded,'success',h.failed,'failed');
+          JS
