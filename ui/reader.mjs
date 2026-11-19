@@ -140,9 +140,9 @@ function readRow(item, registry) {
     fetched: milliseconds(item.fetchedAt),
     method: item.method,
     linkKind: item.linkKind,
-    periodLabel: /^20\d{2}-(0[1-9]|1[0-2])$/.test(item.periodLabel??'') ? item.periodLabel : null,
-    label: text(item.label),
-    editions: (Array.isArray(item.editions)?item.editions:[]).map(e=>({href:publicLink(e?.url),published:milliseconds(e?.publishedAt)})).filter(e=>e.href?.startsWith('https://yanoljaresearch.blogspot.com/')),
+    ...(/^20\d{2}-(0[1-9]|1[0-2])$/.test(item.periodLabel??'') ? {periodLabel:item.periodLabel} : {}),
+    ...(text(item.label) ? {label:text(item.label)} : {}),
+    ...(Array.isArray(item.editions) ? {editions:item.editions.map(e=>({href:publicLink(e?.url),published:milliseconds(e?.publishedAt)})).filter(e=>e.href?.startsWith('https://yanoljaresearch.blogspot.com/'))} : {}),
     verifiedAt: milliseconds(item.verifiedAt, true) === null ? null : item.verifiedAt,
     evidenceUrl: publicLink(item.evidenceUrl),
   };

@@ -217,3 +217,8 @@ test("handles malformed bundles, registries and records", () => {
   ]), []);
   assert.equal(sourceCoverage(null, sources)[0].status, "unknown");
 });
+
+test('partial month is not a publication day; only actual publisher editions become outbound links',()=>{
+ const [r]=read([item('partial',{publishedAt:null,periodLabel:'2026-08',editions:[{url:'https://yanoljaresearch.blogspot.com/2026/08/issuer.html',publishedAt:first},{url:'https://unrelated.example.org/post',publishedAt:first}]})]);
+ assert.equal(r.published,null);assert.equal(r.periodLabel,'2026-08');assert.equal(r.editions.length,1);assert.equal(r.editions[0].published,Date.parse(first));
+});
