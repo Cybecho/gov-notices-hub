@@ -175,6 +175,10 @@ async function desktop(page, seen, f) {
   await chip('source', f.a.id).press('Enter');
   assert.equal(await chip('source', f.a.id).getAttribute('aria-pressed'), 'true');
   await assertFeed(page, [f.latest, f.undated]);
+  const refreshed=page.waitForResponse(r=>new URL(r.url()).pathname.endsWith('/data/notices.json') && new URL(r.url()).searchParams.has('edition'));
+  await page.getByRole('button',{name:'허브 목록 새로 확인'}).click(); await refreshed; await ready(page);
+  assert.equal(await chip('source', f.a.id).getAttribute('aria-pressed'), 'true');
+  await assertFeed(page,[f.latest,f.undated]);
   await chip('source', '').click(); await chip('category', f.b.category).click();
   await assertFeed(page, [f.middle, f.archived]);
   await page.getByRole('searchbox', {name:'제목 검색'}).fill('QA-일치하지-않는-검색어');
