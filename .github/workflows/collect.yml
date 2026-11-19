@@ -25,8 +25,12 @@ jobs:
         if: github.event_name != 'push'
         run: npm run collect
       - run: npm run validate && npm run build
-      - run: npx --no-install playwright install --with-deps --only-shell chromium
-      - run: npm run test:browser
+      - name: Run the full browser suite in the hosted Ubuntu image Chrome
+        env: {HUB_CHROME: /usr/bin/google-chrome}
+        run: |
+          test -x "$HUB_CHROME"
+          "$HUB_CHROME" --version
+          npm run test:browser
       - name: Stage only validated history, sources and status notes
         id: judge
         run: |

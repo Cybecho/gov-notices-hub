@@ -244,7 +244,7 @@ async function smoke(browser) {
 }
 let browser;
 try {
-  browser = await chromium.launch({headless:true});
+  browser = await chromium.launch({headless:true,...(process.env.HUB_CHROME==='/usr/bin/google-chrome'?{executablePath:process.env.HUB_CHROME}:{})});
   if (!process.argv.includes('--smoke')) {
     const f = await sample();
     await scenario(browser, 'desktop timeline, archive, filters, keyboard and directories', f.fixtures, (p, seen) => desktop(p, seen, f));
