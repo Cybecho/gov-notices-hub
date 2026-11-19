@@ -1,4 +1,65 @@
 {
-  "updatedAt": null,
-  "items": []
+  "updatedAt": "2026-11-19T18:10:58.183+09:00",
+  "items": [
+    {
+      "id": "opensurvey-blog-20261026-001",
+      "title": "국내여행 트렌드 리포트 2026",
+      "publishedAt": "2026-10-26T00:00:00+09:00",
+      "fetchedAt": "2026-11-19T18:10:58.183+09:00",
+      "sourceId": "opensurvey-blog",
+      "sourceName": "오픈서베이 블로그",
+      "category": "E4",
+      "kind": "report",
+      "department": null,
+      "url": "https://blog.opensurvey.co.kr/trendreport/domestic-travel-2026/"
+    },
+    {
+      "id": "opensurvey-blog-20250310-001",
+      "title": "해외여행 트렌드 리포트 2025",
+      "publishedAt": "2025-03-10T00:00:00+09:00",
+      "fetchedAt": "2026-11-19T18:10:58.183+09:00",
+      "sourceId": "opensurvey-blog",
+      "sourceName": "오픈서베이 블로그",
+      "category": "E4",
+      "kind": "report",
+      "department": null,
+      "url": "https://blog.opensurvey.co.kr/trendreport/overseas-travel-2025/"
+    },
+    {
+      "id": "opensurvey-blog-20231030-001",
+      "title": "여행 트렌드 리포트 2023",
+      "publishedAt": "2023-10-30T00:00:00+09:00",
+      "fetchedAt": "2026-11-19T18:10:58.183+09:00",
+      "sourceId": "opensurvey-blog",
+      "sourceName": "오픈서베이 블로그",
+      "category": "E4",
+      "kind": "report",
+      "department": null,
+      "url": "https://blog.opensurvey.co.kr/trendreport/travel-2023/"
+    },
+    {
+      "id": "opensurvey-blog-20220711-001",
+      "title": "여행 트렌드 리포트 2022",
+      "publishedAt": "2022-07-11T00:00:00+09:00",
+      "fetchedAt": "2026-11-19T18:10:58.183+09:00",
+      "sourceId": "opensurvey-blog",
+      "sourceName": "오픈서베이 블로그",
+      "category": "E4",
+      "kind": "report",
+      "department": null,
+      "url": "https://blog.opensurvey.co.kr/trendreport/travel-2022/"
+    },
+    {
+      "id": "opensurvey-blog-20181210-001",
+      "title": "여행 트렌드 리포트 2018",
+      "publishedAt": "2018-12-10T00:00:00+09:00",
+      "fetchedAt": "2026-11-19T18:10:58.183+09:00",
+      "sourceId": "opensurvey-blog",
+      "sourceName": "오픈서베이 블로그",
+      "category": "E4",
+      "kind": "report",
+      "department": null,
+      "url": "https://blog.opensurvey.co.kr/trendreport/travel_report_2018/"
+    }
+  ]
 }

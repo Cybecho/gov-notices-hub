@@ -1,11 +1,12 @@
 {
-  "checkedAt": null,
-  "attempted": 0,
-  "succeeded": 0,
+  "checkedAt": "2026-11-19T18:10:58.183+09:00",
+  "attempted": 1,
+  "succeeded": 1,
   "failed": 0,
   "paused": 10,
-  "newCount": 0,
+  "newCount": 5,
   "undated": 0,
-  "duplicates": 0,
-  "items": 0
+  "duplicates": 1,
+  "items": 5,
+  "lastContentUpdate": "2026-11-19T18:10:58.183+09:00"
 }
