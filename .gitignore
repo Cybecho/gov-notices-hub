@@ -1,0 +1,7 @@
+node_modules/
+.site/
+.diagnostics/
+.run/
+.DS_Store
+.env*
+*.log

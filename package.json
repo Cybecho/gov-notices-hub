@@ -1,0 +1,5 @@
+{
+  "name":"seoul-research-links-hub","private":true,"version":"1.0.0","type":"module","engines":{"node":">=24"},
+  "scripts":{"typecheck":"node scripts/check-js.mjs","test":"node --test scripts/collect/*.test.mjs scripts/collect/adapters/*/*.test.mjs ui/*.test.mjs","validate":"node scripts/validate.mjs","build":"node scripts/build.mjs","collect":"node scripts/collect/run.mjs","test:browser":"node scripts/browser-qa.mjs"},
+  "dependencies":{"cheerio":"1.1.2","robots-parser":"3.0.1"},"devDependencies":{"playwright":"1.65.1","typescript":"7.0.2"}
+}
