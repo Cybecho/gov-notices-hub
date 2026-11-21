@@ -1,6 +1,6 @@
 {
   "schema": "issuer-syndication/1",
-  "checkedAt": "2026-11-20T06:29:28.517+09:00",
+  "checkedAt": "2026-11-21T13:50:28.295+09:00",
   "items": [
     {
       "sourceId": "yanolja-brief",
@@ -62,16 +62,16 @@
         "yanolja-insight",
         "yanolja-brief"
       ],
-      "status": "ok",
-      "checkedAt": "2026-11-20T06:29:28.517+09:00",
-      "lastSuccessAt": "2026-11-20T06:29:28.517+09:00",
-      "lastFailureAt": null,
-      "newCount": 5,
-      "seen": 5,
-      "error": null,
-      "pages": 1,
-      "matched": 5,
-      "unclassified": 20
+      "status": "paused",
+      "checkedAt": "2026-11-21T13:50:28.295+09:00",
+      "lastSuccessAt": "2026-11-21T08:30:15.890+09:00",
+      "lastFailureAt": "2026-11-21T13:50:28.295+09:00",
+      "newCount": null,
+      "seen": null,
+      "error": "robots-unavailable",
+      "pages": null,
+      "matched": null,
+      "unclassified": null
     }
   ]
 }
